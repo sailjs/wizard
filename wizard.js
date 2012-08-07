@@ -56,6 +56,7 @@ function(View, clazz) {
     this._steps[i].el.removeClass('hide');
     if (i == 0) this.el.find('.prev').addClass('disabled');
     else this.el.find('.prev').removeClass('disabled');
+    this.emit('stepped', step.name, i);
   }
   
   return Wizard;
