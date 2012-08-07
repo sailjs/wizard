@@ -13,14 +13,12 @@ function(View, clazz) {
     el.find('.prev').addClass('disabled');
     el.find('.next').on('click', function() {
       if (el.find('.next').hasClass('disabled')) return false;
-      if (self._i == self._steps.length - 1) { self.emit('done'); return false; }
-      self._goto(self._i + 1, self._i);
+      self.next(true);
       return false;
     });
     el.find('.prev').on('click', function() {
       if (el.find('.prev').hasClass('disabled')) return false;
-      if (self._i == 0) return false;
-      self._goto(self._i - 1, self._i);
+      self.prev();
       return false;
     });
   }
@@ -38,10 +36,22 @@ function(View, clazz) {
     return this;
   };
   
+  Wizard.prototype.next = function(ask) {
+    if (this._i == this._steps.length - 1) { this.emit('done'); return; }
+    var step = this._steps[this._i];
+    var go = (ask && this.delegate && this.delegate.willNext) ? this.delegate.willNext(step.name, this._i) : true;
+    if (go) this._goto(this._i + 1, this._i);
+  }
+  
+  Wizard.prototype.prev = function() {
+    if (this._i == 0) return;
+    this._goto(this._i - 1, this._i);
+  }
+  
   Wizard.prototype._goto = function(i, pi) {
     this._i = i;
     var step = this._steps[i];
-    this.emit('next', step.name);
+    this.emit('step', step.name, i);
     this._steps[pi].el.addClass('hide');
     this._steps[i].el.removeClass('hide');
     if (i == 0) this.el.find('.prev').addClass('disabled');
