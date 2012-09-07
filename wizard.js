@@ -1,5 +1,5 @@
 define(['view',
-        'anchor/class'],
+        'class'],
 function(View, clazz) {
   
   function Wizard(el, options) {
