@@ -48,6 +48,19 @@ function(View, clazz) {
     this._goto(this._i - 1, this._i);
   }
   
+  Wizard.prototype.to = function(step) {
+    var i;
+    if (typeof step == 'number') {
+      i = step;
+    } else if (typeof step == 'string') {
+      for (var ix = 0, len = this._steps.length; ix < len; ix++) {
+        if (this._steps[ix].name == step) { i = ix; break; }
+      }
+    }
+    if (i == undefined) throw new Error('invalid argument');
+    this._goto(i, this._i);
+  }
+  
   Wizard.prototype._goto = function(i, pi) {
     this._i = i;
     var step = this._steps[i];
