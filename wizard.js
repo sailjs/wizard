@@ -24,15 +24,17 @@ function(View, clazz) {
   }
   clazz.inherits(Wizard, View);
   
-  Wizard.prototype.step = function(name, el) {
+  Wizard.prototype.step = function(name, el, options) {
     if (typeof name != 'string') {
+      options = el;
       el = name;
       name = undefined;
     }
+    options = options || {};
     
     if (this._steps.length) el.addClass('hide');
     this.el.find('.wizard-body').append(el);
-    this._steps.push({ el: el, name: name });
+    this._steps.push({ el: el, name: name, opts: options });
     return this;
   };
   
@@ -67,8 +69,19 @@ function(View, clazz) {
     this.emit('step', step.name, i);
     this._steps[pi].el.addClass('hide');
     this._steps[i].el.removeClass('hide');
-    if (i == 0) this.el.find('.prev').addClass('disabled');
-    else this.el.find('.prev').removeClass('disabled');
+    if (step.opts.final) {
+      this.el.find('.prev').addClass('disabled');
+      this.el.find('.next').addClass('disabled');
+    } else if (i == 0) {
+      this.el.find('.prev').addClass('disabled');
+      this.el.find('.next').removeClass('disabled');
+    } else if (i == this._steps.length - 1) {
+      this.el.find('.prev').removeClass('disabled');
+      this.el.find('.next').addClass('disabled');
+    } else {
+      this.el.find('.prev').removeClass('disabled');
+      this.el.find('.next').removeClass('disabled');
+    }
     this.emit('stepped', step.name, i);
   }
   
