@@ -53,6 +53,8 @@ function(View, clazz, sail) {
       name = undefined;
     }
     options = options || {};
+    options.prevable = options.prevable !== undefined ? options.prevable : true;
+    options.nextable = options.nextable !== undefined ? options.nextable : true;
     
     if (this._steps.length) el.addClass('hide');
     this.el.find(this._bodySel).append(el);
@@ -61,8 +63,10 @@ function(View, clazz, sail) {
   };
   
   Wizard.prototype.next = function(ask) {
-    if (this._i == this._steps.length - 1) { this.emit('done'); return; }
-    var step = this._steps[this._i];
+    if (this._i >= this._steps.length) throw new Error('index out of range');
+    var step = this._steps[this._i]
+      , fin = this._i == this._steps.length - 1 ? true : step.opts.final;
+    if (fin) { this.emit('done', step.name, this._i); return; }
     var go = (ask && this.delegate && this.delegate.willNext) ? this.delegate.willNext(step.name, this._i) : true;
     if (go) this._goto(this._i + 1, this._i);
   }
@@ -87,23 +91,18 @@ function(View, clazz, sail) {
   
   Wizard.prototype._goto = function(i, pi) {
     this._i = i;
-    var step = this._steps[i];
+    var step = this._steps[i]
+      , prevable = i == 0 ? false : step.opts.prevable
+      , nextable = step.opts.nextable;
     this.emit('step', step.name, i);
     this._steps[pi].el.addClass('hide');
     this._steps[i].el.removeClass('hide');
-    if (step.opts.final) {
-      this.el.find('.prev').addClass('disabled');
-      this.el.find('.next').addClass('disabled');
-    } else if (i == 0) {
-      this.el.find('.prev').addClass('disabled');
-      this.el.find('.next').removeClass('disabled');
-    } else if (i == this._steps.length - 1) {
-      this.el.find('.prev').removeClass('disabled');
-      this.el.find('.next').addClass('disabled');
-    } else {
-      this.el.find('.prev').removeClass('disabled');
-      this.el.find('.next').removeClass('disabled');
-    }
+
+    if (prevable) this.el.find('.prev').removeClass('disabled');
+    else this.el.find('.prev').addClass('disabled');
+    if (nextable) this.el.find('.next').removeClass('disabled');
+    else this.el.find('.next').addClass('disabled');
+
     this.emit('stepped', step.name, i);
   }
   
