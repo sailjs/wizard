@@ -1,28 +1,50 @@
 define(['view',
-        'class'],
-function(View, clazz) {
+        'class',
+        'sail'],
+function(View, clazz, sail) {
   
   function Wizard(el, options) {
+    options = options || {};
     Wizard.super_.call(this, el, options);
+    this._bodySel = options.bodySelector || '.body';
     this._steps = [];
     this._i = 0;
+    this._attached = false;
     
     var self = this
       , el = this.el;
     
     el.find('.prev').addClass('disabled');
-    el.find('.next').on('click', function() {
-      if (el.find('.next').hasClass('disabled')) return false;
-      self.next(true);
-      return false;
-    });
     el.find('.prev').on('click', function() {
       if (el.find('.prev').hasClass('disabled')) return false;
       self.prev();
       return false;
     });
+    if (options.form === false) {
+      // By default, `Wizard` expects to be attached to a form, and will advance
+      // to the next step on submit events.  Set `form` option to `false` to
+      // override this behavior.
+      el.find('.next').on('click', function() {
+        if (el.find('.next').hasClass('disabled')) return false;
+        self.next(true);
+        return false;
+      });
+    }
   }
   clazz.inherits(Wizard, View);
+  
+  Wizard.prototype.attach = function(id) {
+    if (this._attached) return;
+    this._attached = true;
+    
+    var self = this
+      , el = this.el;
+    sail.$(id).on('submit', function(e) {
+      if (el.find('.next').hasClass('disabled')) return false;
+      self.next(true);
+      return false;
+    })
+  }
   
   Wizard.prototype.step = function(name, el, options) {
     if (typeof name != 'string') {
@@ -33,7 +55,7 @@ function(View, clazz) {
     options = options || {};
     
     if (this._steps.length) el.addClass('hide');
-    this.el.find('.wizard-body').append(el);
+    this.el.find(this._bodySel).append(el);
     this._steps.push({ el: el, name: name, opts: options });
     return this;
   };

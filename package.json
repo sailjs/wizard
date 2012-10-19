@@ -25,7 +25,8 @@
   "volo": {
     "baseUrl": "vendor",
     "dependencies": {
-      "anchor": "github:anchorjs/class/master",
+      "class": "github:anchorjs/class/master",
+      "sail": "github:sailjs/sail/master",
       "view": "github:sailjs/view/master"
     }
   }
