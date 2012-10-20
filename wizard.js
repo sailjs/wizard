@@ -17,7 +17,7 @@ function(View, clazz, sail) {
     el.find('.prev').addClass('disabled');
     el.find('.prev').on('click', function() {
       if (el.find('.prev').hasClass('disabled')) return false;
-      self.prev();
+      self.prev(true);
       return false;
     });
     if (options.form === false) {
@@ -71,9 +71,21 @@ function(View, clazz, sail) {
     if (go) this._goto(this._i + 1, this._i);
   }
   
-  Wizard.prototype.prev = function() {
+  Wizard.prototype.prev = function(ask) {
     if (this._i == 0) return;
-    this._goto(this._i - 1, this._i);
+    var step = this._steps[this._i];
+    var go = (ask && this.delegate && this.delegate.willPrev) ? this.delegate.willPrev(step.name, this._i) : true;
+    if (go === false) {
+      return;
+    } else if (go === true) {
+      go = this._i - 1;
+    } else if (typeof go == 'string') {
+      for (var i = 0, len = this._steps.length; i < len; i++) {
+        if (this._steps[i].name == go) { go = i; break; }
+      }
+    }
+    
+    this._goto(go, this._i);
   }
   
   Wizard.prototype.to = function(step) {
