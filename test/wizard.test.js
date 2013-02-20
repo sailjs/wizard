@@ -1,8 +1,6 @@
-define(['wizard/wizard',
-        'chai'],
-function(Wizard, chai) {
-  var expect = chai.expect;
-
+define(['wizard'],
+function(Wizard) {
+  
   describe("wizard", function() {
     
     it('should export constructor', function() {

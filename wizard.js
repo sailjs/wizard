@@ -1,6 +1,6 @@
 define(['view',
         'class',
-        'sail'],
+        'render'],
 function(View, clazz, sail) {
   
   function Wizard(el, options) {
