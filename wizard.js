@@ -1,7 +1,7 @@
 define(['view',
-        'class',
-        'render'],
-function(View, clazz, sail) {
+        'render',
+        'class'],
+function(View, render, clazz) {
   
   function Wizard(el, options) {
     options = options || {};
@@ -39,7 +39,7 @@ function(View, clazz, sail) {
     
     var self = this
       , el = this.el;
-    sail.$(id).on('submit', function(e) {
+    render.$(id).on('submit', function(e) {
       if (el.find('.next').hasClass('disabled')) return false;
       self.next(true);
       return false;
