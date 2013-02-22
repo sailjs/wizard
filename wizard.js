@@ -9,7 +9,7 @@ function(View, render, clazz) {
     this._bodySel = options.bodySelector || '.body';
     this._steps = [];
     this._i = 0;
-    this._attached = false;
+    this._attachedTo = null;
     
     var self = this
       , el = this.el;
@@ -33,9 +33,13 @@ function(View, render, clazz) {
   }
   clazz.inherits(Wizard, View);
   
+  Wizard.prototype.remove = function() {
+    return Wizard.super_.prototype.remove.call(this);
+  }
+  
   Wizard.prototype.attach = function(id) {
-    if (this._attached) return;
-    this._attached = true;
+    if (this._attachedTo) return;
+    this._attachedTo = id;
     
     var self = this
       , el = this.el;
